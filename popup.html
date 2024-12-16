@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+  <title>設定画面</title>
+  </head>
+  <body>
+    <div id="darkModeModal" class="modal">
+      <div class="modal-content">
+        <h2>本当にダークモードを有効にしますか？</h2>
+        <p>現在、この機能はベータ版であり、以下のような動作が確認されています。</p>
+        <p><strong>動作速度の低下・非対応箇所の視認性の悪化</strong></p>
+        <p>この機能はいつでも無効にできますが、ご利用の際はご注意ください。</p>
+      <div class="modal-buttons">
+        <button id="darkModeCancel">有効にしない</button>
+        <button id="darkModeConfirm">有効にする</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="header">
+    <h1>ZEN Study Plus</h1>
+  </div>
+  <p class="center">ZEN Study Plusの設定画面です</p>
+
+  <div class="setting-container">
+    <h2>時間表示等の設定</h2>
+    <div class="setting-item">
+      <input type="checkbox" id="movieplus" />
+      <label for="movieplus">Nプラス教材も含める</label>
+    </div>
+    
+    <div class="setting-item">
+      <input type="checkbox" id="showVideoTime" />
+      <label for="showVideoTime">動画時間を表示</label>
+    </div>
+    <div class="setting-item">
+      <input type="checkbox" id="showVideoCount" />
+      <label for="showVideoCount">動画数を表示</label>
+    </div>
+    <div class="setting-item">
+      <input type="checkbox" id="showTestCount" />
+      <label for="showTestCount">テスト数を表示</label>
+    </div>
+    <div class="setting-item">
+      <input type="checkbox" id="showQuestionCount" />
+      <label for="showQuestionCount">問題数を表示</label>
+    </div>
+  </div>
+  <div class="setting-container">
+    <h2>その他</h2>
+    <div class="setting-item">
+      <input type="checkbox" id="autoHideNPlus" />
+      <label for="autoHideNPlus">Nプラス教材自動非表示</label>
+    </div>
+    <div class="setting-item">
+      <input type="checkbox" id="darkMode" />
+      <label for="darkMode">ダークモード(ベータ)</label>
+    </div>
+  </div>
+  
+
+  <script src="popup.js"></script>
+</body>
+</html>

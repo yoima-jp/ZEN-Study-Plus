@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "ZEN Study Plus",
+  "version": "1.3",
+  "description": "ZEN Studyの授業の残り時間とテストの個数などがわかります。",
+  "permissions": ["activeTab", "storage", "tabs"],
+  "host_permissions": ["https://www.nnn.ed.nico/*"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.nnn.ed.nico/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
