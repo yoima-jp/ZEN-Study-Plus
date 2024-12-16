@@ -10,7 +10,7 @@ ZEN Study Plusは、ZEN Studyの授業の残り時間とテストの個数など
 
 ## インストール
 
-1. [リリースページ](https://github.com/yourusername/zen-study-plus/releases)から最新のリリースをダウンロードします。
+1. [リリースページ](https://github.com/yoima-jp/ZEN-Study-Plus/releases)から最新のリリースをダウンロードします。
 2. ダウンロードしたZIPファイルを解凍します。
 3. Chromeブラウザを開き、`chrome://extensions/`にアクセスします。
 4. 右上の「デベロッパーモード」をオンにします。
