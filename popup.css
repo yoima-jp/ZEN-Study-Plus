@@ -1,0 +1,384 @@
+body {
+    width: 350px;
+    padding: 0;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f8f9fa;
+    color: #333;
+}
+
+/* ヘッダースタイル */
+.header {
+    background: #4A90E2;
+    color: white;
+    padding: 15px 16px;
+    margin-bottom: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* タブナビゲーション */
+.tab-navigation {
+    display: flex;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 12px 0;
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.tab-button:hover {
+    color: #4A90E2;
+}
+
+.tab-button.active {
+    color: #4A90E2;
+    font-weight: 600;
+}
+
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    width: 80%;
+    height: 3px;
+    background: #4A90E2;
+    border-radius: 3px 3px 0 0;
+}
+
+/* タブコンテンツ */
+.tab-content {
+    display: none;
+    padding: 16px;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.center {
+    text-align: center;
+    padding: 8px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.setting-container {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 16px; 
+}
+
+.setting-container h2 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 16px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.setting-item:last-child {
+    border-bottom: none;
+}
+
+.setting-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #4A90E2;
+    margin-right: 12px;
+}
+
+.setting-item label {
+    font-size: 14px;
+    color: #333;
+    flex-grow: 1;
+}
+
+/* モーダルスタイル */
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 1; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  overflow: auto; 
+  background-color: rgb(0,0,0); 
+  background-color: rgba(0,0,0,0.4); 
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; 
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; 
+  max-width: 400px;
+  border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+  }
+  
+  .modal-buttons button {
+    margin-left: 10px; 
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  .modal-buttons button:first-child {
+    background-color: #ddd;
+    color: #333;
+  }
+  
+  .modal-buttons button:last-child {
+    background-color: #4A90E2;
+    color: white;
+  }
+
+/* 情報タブ */
+.info-section {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 16px;
+}
+
+.info-section h2 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 16px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+}
+
+.info-item {
+    margin-bottom: 15px;
+}
+
+.info-item h3 {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.info-item p {
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+}
+
+/* アコーディオン設定項目 */
+.setting-group {
+    margin-bottom: 8px;
+}
+
+.setting-group-header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: #f5f7fa;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 8px;
+}
+
+.setting-group-header h3 {
+    margin: 0;
+    font-size: 15px;
+    flex-grow: 1;
+}
+
+.setting-group-header .icon {
+    transition: transform 0.3s ease;
+}
+
+.setting-group-header.active .icon {
+    transform: rotate(180deg);
+}
+
+.setting-group-content {
+    display: none;
+    padding: 0 10px;
+}
+
+.setting-group-content.active {
+    display: block;
+}
+
+/* Discord Webhook 入力スタイル */
+.webhook-container {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+}
+
+.webhook-container label {
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+#discordWebhook {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+.webhook-help {
+    font-size: 12px;
+    color: #777;
+    margin-top: 5px;
+}
+
+/* バージョン情報 */
+.version-info {
+    text-align: center;
+    font-size: 12px;
+    color: #999;
+    padding: 10px 0;
+    border-top: 1px solid #eee;
+    margin-top: 15px;
+}
+
+/* アニメーション効果 */
+.header, .setting-container, button {
+transition: transform 0.2s ease;
+}
+
+.header:hover, .setting-container:hover, button:hover {
+transform: translateY(-1px);
+}
+
+/* 履歴タブのスタイル */
+.course-history-container {
+  max-height: 350px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+.loading-message, .no-history {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+  font-size: 14px;
+}
+
+.history-item {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease;
+}
+
+.history-item:hover {
+  background-color: #f5f7fa;
+}
+
+.history-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.history-title a {
+  color: #4A90E2;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-title a:hover {
+  text-decoration: underline;
+}
+
+.history-date {
+  font-size: 12px;
+  color: #999;
+}
+
+.history-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.history-stat {
+  font-size: 13px;
+  color: #555;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.clear-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.clear-button:hover {
+  background-color: #d32f2f;
+}
+

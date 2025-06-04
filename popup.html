@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+  <title>ZEN Study Plus</title>
+</head>
+<body>
+  <!-- ダークモードモーダル -->
+  <div id="darkModeModal" class="modal">
+    <div class="modal-content">
+      <h2>本当にダークモードを有効にしますか？</h2>
+      <p>現在、この機能はベータ版であり、以下のような動作が確認されています。</p>
+      <p><strong>動作速度の低下・非対応箇所の視認性の悪化</strong></p>
+      <p>この機能はいつでも無効にできますが、ご利用の際はご注意ください。</p>
+      <div class="modal-buttons">
+        <button id="darkModeCancel">有効にしない</button>
+        <button id="darkModeConfirm">有効にする</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ヘッダー -->
+  <div class="header">
+    <h1>ZEN Study Plus</h1>
+  </div>
+  <!-- タブナビゲーション -->
+  <div class="tab-navigation">
+    <button class="tab-button active" data-tab="settings">設定</button>
+    <button class="tab-button" data-tab="history">履歴</button>
+    <button class="tab-button" data-tab="info">情報</button>
+  </div>
+
+  <!-- 設定タブ -->
+  <div id="settings" class="tab-content active">
+    <div class="setting-group">
+      <div class="setting-group-header active">
+        <h3>時間表示の設定</h3>
+        <span class="icon">▼</span>
+      </div>
+      <div class="setting-group-content active">
+        <div class="setting-item">
+          <input type="checkbox" id="movieplus" />
+          <label for="movieplus">Nプラス教材も含める</label>
+        </div>
+        <div class="setting-item">
+          <input type="checkbox" id="showVideoTime" />
+          <label for="showVideoTime">動画時間を表示</label>
+        </div>
+        <div class="setting-item">
+          <input type="checkbox" id="showVideoCount" />
+          <label for="showVideoCount">動画数を表示</label>
+        </div>
+        <div class="setting-item">
+          <input type="checkbox" id="showTestCount" />
+          <label for="showTestCount">テスト数を表示</label>
+        </div>
+        <div class="setting-item">
+          <input type="checkbox" id="showQuestionCount" />
+          <label for="showQuestionCount">問題数を表示</label>
+        </div>
+        <div class="setting-item">
+          <input type="checkbox" id="showRemainingTime" />
+          <label for="showRemainingTime">コースリンクに残り時間を表示</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <div class="setting-group-header">
+        <h3>表示設定</h3>
+        <span class="icon">▼</span>
+      </div>
+      <div class="setting-group-content">
+        <div class="setting-item">
+          <input type="checkbox" id="autoHideNPlus" />
+          <label for="autoHideNPlus">Nプラス教材自動非表示</label>
+        </div>
+        <div class="setting-item">
+          <input type="checkbox" id="darkMode" />
+          <label for="darkMode">ダークモード(ベータ)</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <div class="setting-group-header">
+        <h3>通知設定</h3>
+        <span class="icon">▼</span>
+      </div>
+      <div class="setting-group-content">
+        <div class="setting-item">
+          <input type="checkbox" id="enableVideoEndSound" />
+          <label for="enableVideoEndSound">動画視聴完了時に通知する</label>
+        </div>
+        <div class="setting-item webhook-container">
+          <label for="discordWebhook">Discord Webhook URL:</label>
+          <input type="text" id="discordWebhook" placeholder="https://discord.com/api/webhooks/..." />
+          <div class="webhook-help">
+            動画視聴完了時にDiscordに通知を送信します。(任意)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 履歴タブ (新規追加) -->
+  <div id="history" class="tab-content">
+    <div class="info-section">
+      <h2>コース履歴</h2>
+      <div class="course-history-container" id="courseHistoryContainer">
+        <div class="loading-message">履歴を読み込み中...</div>
+      </div>
+    </div>
+    <div class="button-container">
+      <button id="clearHistory" class="clear-button">履歴をクリア</button>
+    </div>
+  </div>
+
+  <!-- 情報タブ -->
+  <div id="info" class="tab-content">
+    <div class="info-section">
+      <h2>拡張機能について</h2>
+      <div class="info-item">
+        <h3>概要</h3>
+        <p>ZEN Study Plusは、ZEN学習システムをより効率的に利用するための拡張機能です。</p>
+      </div>      <div class="info-item">
+        <h3>主な機能</h3>
+        <p>・動画・テスト時間の表示<br>
+           ・ダークモード対応<br>
+           ・学習完了通知</p>
+      </div>
+    </div>
+    <div class="info-section">
+      <h2>使い方</h2>
+      <div class="info-item">
+        <p>設定タブで各機能の有効/無効を切り替えることができます。</p>
+      </div>
+    </div>
+    <div class="version-info">
+      ZEN Study Plus v1.4
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
