@@ -2,12 +2,17 @@ let includeMoviePlus = false;
 let autoHideNPlus = false;
 let darkMode = false;
 let enableVideoEndSound = false;
+let visualizeProgress = false;
 let discordWebhook = '';
 let intervalID = null;
 let watchingVideo = false;
 let videoEndNotified = false;
 let notificationAudio = new Audio(chrome.runtime.getURL('audio/notification.mp3'));
 let currentVideoTitle = null; // 動画タイトルを保存する変数
+
+// Global variables to store SVG templates for progress visualization
+let testIconTemplate = null; // For incomplete (gray) icons
+let testFillIconTemplate = null; // For completed (green) icons
 
 // ダークモードの処理をここに直接書きます
 function applyDarkMode() {
@@ -253,6 +258,108 @@ function updateCountAndTime() {
   
   // 動画視聴完了の検出
   checkVideoCompletion();
+
+  // 進捗の視覚化
+  visualizeProgressIcons();
+}
+
+// 進捗をアイコンで視覚化する関数
+function visualizeProgressIcons() {
+  // セレクターをより汎用的にする
+  // Find SVG templates if not already found
+  if (!testIconTemplate) {
+    testIconTemplate = document.querySelector('svg[type="test"]');
+  }
+  if (!testFillIconTemplate) {
+    testFillIconTemplate = document.querySelector('svg[type="test-fill"]');
+  }
+  if (!testIconTemplate || !testFillIconTemplate) {
+      console.warn("ZEN Study Plus: Could not find both 'test' and 'test-fill' SVG templates. Falling back to original icon cloning behavior.");
+  }
+  const figures = document.querySelectorAll('figure[class*="sc-hanjyw-2"]');
+
+  figures.forEach(figure => {
+    // アイコンとテキスト("6/13")の両方を含むコンテナ
+    const container = figure.querySelector('div[class*="sc-fxzfvb-0"]');
+    if (!container) return;
+
+    const ariaLabel = figure.getAttribute('aria-label');
+    // aria-labelがない、またはレポートの形式でない場合は処理しない
+    if (!ariaLabel || !ariaLabel.startsWith('レポート')) {
+      return;
+    }
+    
+    const match = ariaLabel.match(/レポート(\d+)個のうち(\d+)個が完了/);
+
+    if (visualizeProgress) {
+      // 機能が有効な場合
+      if (figure.dataset.visualized === 'true') return;
+      
+      // レポート形式でない場合は何もしない
+      if (!match) return;
+
+      const total = parseInt(match[1], 10);
+      const completed = parseInt(match[2], 10);
+
+      // totalが0または数値でない場合は、視覚化しない
+      if (isNaN(total) || isNaN(completed) || total === 0) {
+        return;
+      }
+
+      // Get the original icon from the current figure for fallback if templates are missing
+      const originalIconInFigure = container.querySelector('svg');
+      if (!originalIconInFigure) return;
+
+
+      // 元のHTMLとスタイルを保存
+      if (!figure.dataset.originalIconPartHTML) {
+        figure.dataset.originalIconPartHTML = container.innerHTML;
+      }
+      if (!figure.dataset.originalIconPartStyle) {
+        figure.dataset.originalIconPartStyle = container.getAttribute('style') || '';
+      }
+
+      // アイコンとテキスト部分をクリア
+      container.innerHTML = '';
+
+      // アイコンコンテナ自体をflexコンテナとして設定
+      Object.assign(container.style, {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '2px',
+        alignItems: 'center'
+      });
+
+      for (let i = 0; i < total; i++) {
+        let iconToClone;
+        let iconColor;
+
+        if (i < completed) {
+          // This icon should be completed (green)
+          iconToClone = testFillIconTemplate || originalIconInFigure; // Use test-fill template, fallback to original
+          iconColor = 'rgb(0, 197, 65)'; // Green
+        } else {
+          // This icon should be incomplete (gray)
+          iconToClone = testIconTemplate || originalIconInFigure; // Use test template, fallback to original
+          iconColor = '#b3b3b3'; // Gray
+        }
+
+        const newIcon = iconToClone.cloneNode(true); // Clone the chosen template
+        newIcon.style.display = 'block'; // flexアイテムなのでblockでOK
+        newIcon.setAttribute('color', iconColor);
+        newIcon.querySelector('path')?.setAttribute('fill', iconColor);
+        container.appendChild(newIcon);
+      }
+      figure.dataset.visualized = 'true';
+    } else if (figure.dataset.visualized === 'true') {
+      // 機能が無効な場合（元の状態に戻す）
+      container.innerHTML = figure.dataset.originalIconPartHTML || '';
+      container.setAttribute('style', figure.dataset.originalIconPartStyle || '');
+      delete figure.dataset.visualized;
+      delete figure.dataset.originalIconPartHTML;
+      delete figure.dataset.originalIconPartStyle;
+    }
+  });
 }
 
 // 動画視聴完了を検出する関数
@@ -511,7 +618,12 @@ function hasVideoInAnyFrame() {
 // 設定変更を受け取る
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
   if (message.type === 'settingChanged') {
-    includeMoviePlus = message.includeMoviePlus;
+    if (message.includeMoviePlus !== undefined) {
+      includeMoviePlus = message.includeMoviePlus;
+    }
+    if (message.visualizeProgress !== undefined) {
+      visualizeProgress = message.visualizeProgress;
+    }
     updateCountAndTime();
   } else if (message.type === 'autoHideNPlusChanged') {
     autoHideNPlus = message.autoHideNPlus;
@@ -529,12 +641,13 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 });
 
 // 初期設定を読み込む
-chrome.storage.sync.get(['includeMoviePlus', 'autoHideNPlus', 'darkMode', 'enableVideoEndSound', 'discordWebhook'], function(result) {
+chrome.storage.sync.get(['includeMoviePlus', 'autoHideNPlus', 'darkMode', 'enableVideoEndSound', 'discordWebhook', 'visualizeProgress'], function(result) {
   includeMoviePlus = result.includeMoviePlus || false;
   autoHideNPlus = result.autoHideNPlus || false;
   darkMode = result.darkMode || false;
   enableVideoEndSound = result.enableVideoEndSound || false;
   discordWebhook = result.discordWebhook || '';
+  visualizeProgress = result.visualizeProgress || false;
   updateCountAndTime();
 
   // 既存のインターバルがあれば解除

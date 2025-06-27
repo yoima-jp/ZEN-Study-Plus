@@ -129,7 +129,8 @@ document.addEventListener('DOMContentLoaded', function() {
   function loadSettings() {
     chrome.storage.sync.get(['includeMoviePlus', 'autoHideNPlus', 'darkMode', 'showVideoTime', 
                             'showVideoCount', 'showTestCount', 'showQuestionCount', 
-                            'enableVideoEndSound', 'discordWebhook', 'showRemainingTime'], function(result) {
+                            'enableVideoEndSound', 'discordWebhook', 'showRemainingTime',
+                            'visualizeProgress'], function(result) {
       document.getElementById('movieplus').checked = result.includeMoviePlus || false;
       document.getElementById('autoHideNPlus').checked = result.autoHideNPlus || false;
       document.getElementById('darkMode').checked = result.darkMode || false;
@@ -140,6 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('enableVideoEndSound').checked = result.enableVideoEndSound || false;
       document.getElementById('discordWebhook').value = result.discordWebhook || '';
       document.getElementById('showRemainingTime').checked = result.showRemainingTime || false;
+      document.getElementById('visualizeProgress').checked = result.visualizeProgress || false;
     });
   }
 
