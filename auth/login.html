@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZEN Study Plus - Login</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .container { max-width: 400px; margin: auto; }
+    input { width: 100%; padding: 8px; margin-bottom: 10px; }
+    button { padding: 8px 12px; margin-right: 5px; }
+    #message { margin-top: 10px; color: red; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>ログイン / 登録</h2>
+    <input type="text" id="username" placeholder="ユーザー名">
+    <input type="password" id="password" placeholder="パスワード">
+    <div>
+      <button id="loginBtn">ログイン</button>
+      <button id="registerBtn">登録</button>
+    </div>
+    <div id="message"></div>
+  </div>
+  <script src="login.js"></script>
+</body>
+</html>

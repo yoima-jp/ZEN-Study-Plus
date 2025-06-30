@@ -9,6 +9,7 @@ let watchingVideo = false;
 let videoEndNotified = false;
 let notificationAudio = new Audio(chrome.runtime.getURL('audio/notification.mp3'));
 let currentVideoTitle = null; // 動画タイトルを保存する変数
+let cachedCourseHistory = null;
 
 // Global variables to store SVG templates for progress visualization
 let testIconTemplate = null; // For incomplete (gray) icons
@@ -162,22 +163,36 @@ function updateCountAndTime() {
     const courseInfo = `${courseMatch[1]}/chapters/${courseMatch[2]}`;
     const totalMinutes = Math.floor(totalDuration / 60);
     const totalSeconds = totalDuration % 60;
-    
-    // コース情報と統計を保存
-    chrome.storage.sync.get('courseHistory', function(result) {
-      let courseHistory = result.courseHistory || {};
-      
-      courseHistory[courseInfo] = {
-        url: currentUrl,
-        title: document.title || 'コース',
-        videoTime: `${totalMinutes}分${totalSeconds}秒`,
-        videoCount: videoCount,
-        testCount: testCount,
-        questionCount: totalQuestions,
-        timestamp: new Date().toISOString()
-      };
-      
-      chrome.storage.sync.set({ courseHistory: courseHistory });
+
+    const payload = [{
+      course_id: courseMatch[1],
+      chapter_id: courseMatch[2],
+      url: currentUrl,
+      title: document.title || 'コース',
+      video_time: `${totalMinutes}分${totalSeconds}秒`,
+      video_time_s: totalDuration,
+      video_count: videoCount,
+      test_count: testCount,
+      question_count: totalQuestions,
+      updated_at: new Date().toISOString()
+    }];
+
+    chrome.storage.local.get('jwt', res => {
+      if (!res.jwt) return;
+      fetch('https://zsp-api.yoima.com/saveHistory.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + res.jwt
+        },
+        body: JSON.stringify(payload)
+      })
+        .then(r => r.json())
+        .then(() => {
+          if (!cachedCourseHistory) cachedCourseHistory = {};
+          cachedCourseHistory[courseInfo] = payload[0];
+        })
+        .catch(e => console.error('saveHistory error', e));
     });
   }
 
@@ -663,33 +678,21 @@ chrome.storage.sync.get(['includeMoviePlus', 'autoHideNPlus', 'darkMode', 'enabl
 
 // コースリンクに残り時間情報を表示する関数
 function addRemainingTimeToLinks() {
-  // 設定を取得
   chrome.storage.sync.get('showRemainingTime', function(result) {
-    // 機能が無効の場合は何もしない
     if (result.showRemainingTime === false) {
       return;
     }
-    
-    // コース一覧ページのリンクを取得
+
     const courseLinks = document.querySelectorAll('a[href^="/courses/"]');
-    
-    // 履歴データがあれば処理を実行
-    chrome.storage.sync.get('courseHistory', function(result) {
-      const courseHistory = result.courseHistory || {};
-      
+
+    const applyHistory = courseHistory => {
       courseLinks.forEach(link => {
-        // リンクからコースIDとチャプターIDを抽出
         const courseMatch = link.getAttribute('href').match(/\/courses\/(\d+)\/chapters\/(\d+)/);
         if (courseMatch) {
           const courseInfo = `${courseMatch[1]}/chapters/${courseMatch[2]}`;
-          
-          // 履歴にこのコースの情報があるか確認
           if (courseHistory[courseInfo]) {
             const courseData = courseHistory[courseInfo];
-            
-            // 残り時間表示用の要素を作成または更新
             let remainingTimeElem = link.querySelector('.remaining-time-indicator');
-            
             if (!remainingTimeElem) {
               remainingTimeElem = document.createElement('div');
               remainingTimeElem.className = 'remaining-time-indicator';
@@ -697,8 +700,6 @@ function addRemainingTimeToLinks() {
               remainingTimeElem.style.color = '#4A90E2';
               remainingTimeElem.style.fontWeight = 'bold';
               remainingTimeElem.style.marginTop = '5px';
-              
-              // 進捗バーの下に配置
               const progressContainer = link.querySelector('.sc-1ckq7w0-0');
               if (progressContainer) {
                 progressContainer.parentNode.insertBefore(remainingTimeElem, progressContainer.nextSibling);
@@ -709,13 +710,34 @@ function addRemainingTimeToLinks() {
                 }
               }
             }
-            
-            // 残り時間の表示
-            const videoTime = courseData.videoTime;
+            const videoTime = courseData.video_time || courseData.videoTime;
             remainingTimeElem.textContent = `残り時間: ${videoTime}`;
           }
         }
       });
-    });
+    };
+
+    if (cachedCourseHistory) {
+      applyHistory(cachedCourseHistory);
+    } else {
+      chrome.storage.local.get('jwt', res => {
+        if (!res.jwt) return;
+        fetch('https://zsp-api.yoima.com/loadHistory.php', {
+          method: 'GET',
+          headers: { 'Authorization': 'Bearer ' + res.jwt }
+        })
+          .then(r => r.json())
+          .then(data => {
+            const obj = {};
+            data.forEach(item => {
+              const key = `${item.course_id}/chapters/${item.chapter_id}`;
+              obj[key] = item;
+            });
+            cachedCourseHistory = obj;
+            applyHistory(obj);
+          })
+          .catch(e => console.error('loadHistory error', e));
+      });
+    }
   });
 }

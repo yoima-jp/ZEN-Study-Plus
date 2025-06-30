@@ -105,11 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 履歴クリアボタンのイベントリスナーを追加
   document.getElementById('clearHistory').addEventListener('click', function() {
-    if (confirm('本当にすべての履歴を削除しますか？')) {
-      chrome.storage.sync.remove('courseHistory', function() {
-        loadCourseHistory(); // 履歴を再読み込み
-      });
-    }
+    alert('履歴の削除は現在サポートされていません');
   });
 
   function closeModal() {
@@ -161,44 +157,64 @@ document.addEventListener('DOMContentLoaded', function() {
   function loadCourseHistory() {
     const historyContainer = document.getElementById('courseHistoryContainer');
     historyContainer.innerHTML = '<div class="loading-message">履歴を読み込み中...</div>';
-    
-    chrome.storage.sync.get('courseHistory', function(result) {
-      const courseHistory = result.courseHistory || {};
-      
-      if (Object.keys(courseHistory).length === 0) {
-        historyContainer.innerHTML = '<div class="no-history">履歴がありません</div>';
+
+    chrome.storage.local.get('jwt', function(res) {
+      const token = res.jwt;
+      if (!token) {
+        historyContainer.innerHTML = '<div class="no-history">ログインしてください</div>';
         return;
       }
-      
-      historyContainer.innerHTML = '';
-      
-      // 新しい順に並べ替え
-      const sortedHistory = Object.entries(courseHistory).sort((a, b) => {
-        return new Date(b[1].timestamp) - new Date(a[1].timestamp);
-      });
-      
-      sortedHistory.forEach(([courseInfo, data]) => {
-        const historyItem = document.createElement('div');
-        historyItem.className = 'history-item';
-        
-        const date = new Date(data.timestamp);
-        const formattedDate = `${date.getFullYear()}/${(date.getMonth()+1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-        
-        historyItem.innerHTML = `
-          <div class="history-title">
-            <a href="${data.url}" target="_blank">${data.title}</a>
-            <span class="history-date">${formattedDate}</span>
-          </div>
-          <div class="history-details">
-            <div class="history-stat">動画時間: ${data.videoTime}</div>
-            <div class="history-stat">動画数: ${data.videoCount}</div>
-            <div class="history-stat">テスト数: ${data.testCount}</div>
-            <div class="history-stat">問題数: ${data.questionCount}</div>
-          </div>
-        `;
-        
-        historyContainer.appendChild(historyItem);
-      });
+
+      fetch('https://zsp-api.yoima.com/loadHistory.php', {
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (!Array.isArray(data) || data.length === 0) {
+            historyContainer.innerHTML = '<div class="no-history">履歴がありません</div>';
+            return;
+          }
+
+          const courseHistory = {};
+          data.forEach(item => {
+            const key = `${item.course_id}/chapters/${item.chapter_id}`;
+            courseHistory[key] = {
+              url: item.url,
+              title: item.title,
+              videoTime: item.video_time,
+              videoCount: item.video_count,
+              testCount: item.test_count,
+              questionCount: item.question_count,
+              timestamp: item.updated_at
+            };
+          });
+
+          historyContainer.innerHTML = '';
+          const sortedHistory = Object.entries(courseHistory).sort((a, b) => new Date(b[1].timestamp) - new Date(a[1].timestamp));
+          sortedHistory.forEach(([courseInfo, data]) => {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            const date = new Date(data.timestamp);
+            const formattedDate = `${date.getFullYear()}/${(date.getMonth()+1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+            historyItem.innerHTML = `
+              <div class="history-title">
+                <a href="${data.url}" target="_blank">${data.title}</a>
+                <span class="history-date">${formattedDate}</span>
+              </div>
+              <div class="history-details">
+                <div class="history-stat">動画時間: ${data.videoTime}</div>
+                <div class="history-stat">動画数: ${data.videoCount}</div>
+                <div class="history-stat">テスト数: ${data.testCount}</div>
+                <div class="history-stat">問題数: ${data.questionCount}</div>
+              </div>
+            `;
+            historyContainer.appendChild(historyItem);
+          });
+        })
+        .catch(() => {
+          historyContainer.innerHTML = '<div class="no-history">読み込みに失敗しました</div>';
+        });
     });
   }
 });

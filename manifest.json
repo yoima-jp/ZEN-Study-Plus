@@ -4,7 +4,7 @@
   "version": "1.6",
   "description": "ZEN Studyの授業の残り時間とテストの個数などがわかります。",
   "permissions": ["activeTab", "storage", "tabs", "notifications", "unlimitedStorage", "scripting"],
-  "host_permissions": ["https://www.nnn.ed.nico/*", "https://zsp.yoima.com/*"],
+  "host_permissions": ["https://www.nnn.ed.nico/*", "https://zsp.yoima.com/*", "https://zsp-api.yoima.com/*"],
   "action": {
     "default_popup": "popup.html"
   },
@@ -33,7 +33,8 @@
         "audio/notification.mp3",
         "images/notification_icon.png",
         "html2canvas.min.js",
-        "update_notification/*"
+        "update_notification/*",
+        "auth/*"
       ],
       "matches": ["<all_urls>", "https://www.nnn.ed.nico/*"]
     }
