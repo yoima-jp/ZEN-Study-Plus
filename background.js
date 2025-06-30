@@ -49,16 +49,24 @@ async function checkUpdate() {
 }
 
 // 拡張機能のインストール時またはアップデート時にウェルカムページを開く
+function openLoginIfNeeded() {
+  chrome.storage.local.get('jwt', data => {
+    if (!data.jwt) {
+      chrome.tabs.create({ url: chrome.runtime.getURL('auth/login.html') });
+    }
+  });
+}
+
 chrome.runtime.onInstalled.addListener(function(details) {
   if (details.reason === 'install') {
-    chrome.tabs.create({ url: 'welcome/welcome.html' });
+    openLoginIfNeeded();
   }
-  // インストール/アップデート直後にもチェック
   checkUpdate();
 });
 
 // ブラウザ起動時にアップデートをチェック
 chrome.runtime.onStartup.addListener(() => {
+  openLoginIfNeeded();
   checkUpdate();
 });
 
